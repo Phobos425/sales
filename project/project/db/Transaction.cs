@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace poject.db
+namespace project.db
 {
     /// <summary>
     /// класс, который 
     /// </summary>
-    public class Transaction
+    public struct Transaction
     {
-        public static int NewId { get; private set; } //количество транзакций
+        private static uint _newId = 0; //количество транзакций
 
-        public int Id { get; private set; } // id транзакции
+        public uint Id { get; private set; } // id транзакции
         private DateTime _date; // дата транзакции
         public DateTime Date {
             get {
@@ -28,10 +29,10 @@ namespace poject.db
                 }
             }
         }
-        public int ProdId { get; set; } // id товара
+        public uint ProdId { get; set; } // id товара
         public string Name { get; set; } // Наименование товара
-        public int Count { get; set; } // Количество
-        public int PricePerUnit { get; set; } // Цена за единицу
+        public uint Count { get; set; } // Количество
+        public uint PricePerUnit { get; set; } // Цена за единицу
         private byte _region; // регион транзакции
         public byte Region
         {
@@ -49,6 +50,52 @@ namespace poject.db
                     throw new ArgumentException("Неверный регион");
                 }
             }
+        }
+        /// <summary>
+        /// конструктор класса
+        /// </summary>
+        /// <param name="date">дата транзакции</param>
+        /// <param name="prodId">id товара</param>
+        /// <param name="name">наименование товара</param>
+        /// <param name="count">количество товаров</param>
+        /// <param name="pricePerUnit">цена за шт</param>
+        /// <param name="region">номер региона</param>
+        public Transaction(DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
+        {
+            ++_newId;
+            Id = _newId;
+            Date = date;
+            ProdId = prodId;
+            Name = name;
+            Count = count;
+            PricePerUnit = pricePerUnit;
+            Region = region;
+        }
+        /// <summary>
+        /// конструктор класса
+        /// </summary>
+        /// <param name="id">id транзакции</param>
+        /// <param name="date">дата транзакции</param>
+        /// <param name="prodId">id товара</param>
+        /// <param name="name">наименование товара</param>
+        /// <param name="count">количество товаров</param>
+        /// <param name="pricePerUnit">цена за шт</param>
+        /// <param name="region">номер региона</param>
+        public Transaction(uint id, DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
+        {
+            _newId = Math.Max(id, _newId) + 1;
+            Id = id;
+            Date = date;
+            ProdId = prodId;
+            Name = name;
+            Count = count;
+            PricePerUnit = pricePerUnit;
+            Region = region;
+        }
+        public override string ToString()
+        {
+            return $"{Id};{Date.ToString(new CultureInfo("ru-RU"))[0..10]};{ProdId};" +
+                $"{Name};{Count};{PricePerUnit};{Region}\n";
         }
     }
 }
