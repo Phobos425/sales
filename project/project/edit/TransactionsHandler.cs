@@ -12,57 +12,43 @@ namespace project.edit {
 	/// </summary>
 	public static class TransactionsHandler
 	{
-		/// <summary>
-		/// Метод для нахождения траназакции по её id
-		/// </summary>
-		/// <param name="id">id</param>
-		/// <param name="data">список транзакций</param>
-		/// <returns>индекс транзакции</returns>
-		private static int GetById(uint id, ref List<Transaction> data)
+        /// <summary>
+        /// Метод для нахождения траназакции по её id
+        /// </summary>
+        /// <param name="data">список транзакций</param>
+        /// <param name="id">id</param>
+        /// <returns>индекс транзакции</returns>
+        private static int GetById(List<Transaction> data, uint id)
 		{
-			var res = from el in data
+		    var res1 = from el in data
 					  where el.Id == id
 					  select data.IndexOf(el);
-			return res[0];
+            int res = -1;
+            try
+            {
+                res = res1.GetEnumerator().Current;
+            } catch { }
+            return res;
 		}
         /// <summary>
         /// Добавление транзакции
         /// </summary>
         /// <param name="data">список транзакций</param>
-        /// <exception cref="ArgumentException">выбрасывается в случае неверно введенной транзакции</exception>
-		public static void Add(ref List<Transaction> data)
+        /// <param name="trans">транзакция</param>
+		public static void Add(ref List<Transaction> data, Transaction trans)
 		{
-			Console.WriteLine("Введите дату создания транзакции");
-            DateTime dt;
-            bool f = DateTime.TryParse(Console.ReadLine(), out dt);
-            Console.WriteLine("Введите id товара");
-            uint prodId;
-            f &= uint.TryParse(Console.ReadLine(), out prodId);
-            Console.WriteLine("Введите название товара");
-            string name = Console.ReadLine();
-            uint count;
-            Console.WriteLine("Введите количество товара");
-            f &= uint.TryParse(Console.ReadLine(), out count);
-            uint price;
-            Console.WriteLine("Введите цену за еденицу");
-            f &= uint.TryParse(Console.ReadLine(), out price);
-            byte reg;
-            Console.WriteLine("Введите номер региона");
-            f &= byte.TryParse(Console.ReadLine(), out reg);
-            if (!f)
-            {
-                throw new ArgumentException("Неверная запись транзакции");
-            }
-            data.Add(new Transaction(dt, prodId, name, count, price, reg));
+            data.Add(trans);
         }
         /// <summary>
         /// метод, отвечающий за удаление транзакций
         /// </summary>
         /// <param name="id">id транзакции</param>
         /// <param name="data">список транзакций</param>
-        public static void Delete(uint id, ref List<Transaction> data)
+        /// <returns>список транзакций</returns>
+        public static List<Transaction> Delete(List<Transaction> data, uint id)
         {
             data.RemoveAll(x => x.Id == id);
+            return data;
         }
         /// <summary>
         /// редактирование uint элементов транзакции
@@ -71,51 +57,90 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        public static void Edit(ref List<Transaction> data, uint id, Elements el, uint val)
+        /// <returns>список транзакций</returns>
+        /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
+        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, uint val)
         {
-            int trans = GetById(id, ref data);
+            int ind = GetById(data, id);
+            if (ind == -1)
+            {
+                throw new ArgumentException("Неверный id");
+            }
+            var trans = data[ind];
             switch (el)
             {
-                case el.ProdId:
-                    data[trans].ProdId = val; break;
-                case el.Count:
-                    data[trans].Count = val; break;
-                case el.PricePerUnit:
-                    data[trans].PricePerUnit = val; break;
+                case Elements.ProdId:
+                    trans.ProdId = val; break;
+                case Elements.Count:
+                    trans.Count = val; break;
+                case Elements.PricePerUnit:
+                    trans.PricePerUnit = val; break;
             }
+            data[ind] = trans;
+            return data;
         }
         /// <summary>
         /// редактирование времени транзакции
         /// </summary>
         /// <param name="data">список транзакции</param>
         /// <param name="id">id транзакции</param>
+        /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        public static void Edit(ref List<Transaction> data, uint id, DateTime val)
+        /// <returns>список транзакций</returns>
+        /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
+        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, DateTime val)
         {
-            int trans = GetById(id, ref data);
-            data[trans].Date = val;
+            int ind = GetById(data, id);
+            if (ind == -1)
+            {
+                throw new ArgumentException("Неверное id");
+            }
+            var trans = data[ind];
+            trans.Date = val;
+            data[ind] = trans;
+            return data;
         }
         /// <summary>
         /// редактирование названия товара
         /// </summary>
         /// <param name="data">список транзакции</param>
         /// <param name="id">id транзакции</param>
+        /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        public static void Edit(ref List<Transaction> data, uint id, string val)
+        /// <returns>список транзакций</returns>
+        /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
+        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, string val)
         {
-            int trans = GetById(id, ref data);
-            data[trans].Name = val;
+            int ind = GetById(data, id);
+            if (ind == -1)
+            {
+                throw new ArgumentException("Неверное id");
+            }
+            var trans = data[ind];
+            trans.Name = val;
+            data[ind] = trans;
+            return data;
         }
         /// <summary>
         /// редактирование региона транзакции
         /// </summary>
         /// <param name="data">список транзакции</param>
         /// <param name="id">id транзакции</param>
+        /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        public static void Edit(ref List<Transaction> data, uint id, byte val)
+        /// <returns>список транзакций</returns>
+        /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
+        public static List<Transaction> Edit(ref List<Transaction> data, uint id, Elements el, byte val)
         {
-            int trans = GetById(id, ref data);
-            data[trans].Region = val;
+            int ind = GetById(data, id);
+            if (ind == -1)
+            {
+                throw new ArgumentException("Неверное id");
+            }
+            var trans = data[ind];
+            trans.Region = val;
+            data[ind] = trans;
+            return data;
         }
     }
 }
