@@ -62,7 +62,6 @@ namespace project.db
         /// <param name="region">номер региона</param>
         public Transaction(DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
         {
-            ++_newId;
             Id = _newId;
             Date = date;
             ProdId = prodId;
@@ -70,6 +69,7 @@ namespace project.db
             Count = count;
             PricePerUnit = pricePerUnit;
             Region = region;
+            ++_newId;
         }
         /// <summary>
         /// конструктор класса
@@ -83,7 +83,7 @@ namespace project.db
         /// <param name="region">номер региона</param>
         public Transaction(uint id, DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
         {
-            _newId = Math.Max(id, _newId) + 1;
+            _newId = Math.Max(id + 1, _newId);
             Id = id;
             Date = date;
             ProdId = prodId;

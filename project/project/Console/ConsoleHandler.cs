@@ -46,6 +46,20 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
+        /// Вывод ошибки при добавлении транзакции
+        /// </summary>
+        public static void PrintAddError()
+        {
+            Console.WriteLine("Неверная запись транзакции");
+            Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+        }
+        // вывод ошибки при удалении транзакции
+        public static void PrintEditError()
+        {
+            Console.WriteLine("Неверное название. Повторите попытку");
+            Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+        }
+        /// <summary>
         /// Загрузка данных из файла
         /// </summary>
         /// <param name="transactions"></param>
@@ -83,43 +97,87 @@ namespace project.ConsoleHandler
         /// <exception cref="ArgumentException">выбрасывается в случае неверно введенной транзакции</exception>
         public static void Add(ref List<Transaction> data)
         {
+            //дальше идут блоки инициализации траназакции, в случае ввода -1, пользователя возвращает в главное меню
+
             Console.WriteLine("Введите дату создания транзакции");
+            Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
             DateTime dt;
-            bool f = DateTime.TryParse(Console.ReadLine(), out dt);
-            if (!f)
+            string s = Console.ReadLine();
+            bool f = DateTime.TryParse(s, out dt);
+            while (!f)
             {
-                throw new ArgumentException("Неверная запись транзакции");
+                PrintAddError();
+                s = Console.ReadLine();
+                if (s == "-1")
+                {
+                    return;
+                }
+                f = DateTime.TryParse(s, out dt);
             }
+
             Console.WriteLine("Введите id товара");
             uint prodId;
-            f &= uint.TryParse(Console.ReadLine(), out prodId);
-            if (!f)
+            s = Console.ReadLine();
+            f = uint.TryParse(s, out prodId);
+            while (!f)
             {
-                throw new ArgumentException("Неверная запись транзакции");
+                PrintAddError();
+                s = Console.ReadLine();
+                if (s == "-1")
+                {
+                    return;
+                }
+                f = uint.TryParse(s, out prodId);
             }
+
             Console.WriteLine("Введите название товара");
             string name = Console.ReadLine();
             uint count;
+
             Console.WriteLine("Введите количество товара");
-            f &= uint.TryParse(Console.ReadLine(), out count);
-            if (!f)
+            s = Console.ReadLine();
+            f = uint.TryParse(s, out count);
+            while (!f)
             {
-                throw new ArgumentException("Неверная запись транзакции");
+                PrintAddError();
+                s = Console.ReadLine();
+                if (s == "-1")
+                {
+                    return;
+                }
+                f = uint.TryParse(s, out count);
             }
+
             uint price;
             Console.WriteLine("Введите цену за еденицу");
-            f &= uint.TryParse(Console.ReadLine(), out price);
-            if (!f)
+            s = Console.ReadLine();
+            f &= uint.TryParse(s, out price);
+            while (!f)
             {
-                throw new ArgumentException("Неверная запись транзакции");
+                PrintAddError();
+                s = Console.ReadLine();
+                if (s == "-1")
+                {
+                    return;
+                }
+                f = uint.TryParse(s, out price);
             }
+
             byte reg;
             Console.WriteLine("Введите номер региона");
-            f &= byte.TryParse(Console.ReadLine(), out reg);
-            if (!f)
+            s = Console.ReadLine();
+            f &= byte.TryParse(s, out reg);
+            while (!f)
             {
-                throw new ArgumentException("Неверная запись транзакции");
+                PrintAddError();
+                s = Console.ReadLine();
+                if (s == "-1")
+                {
+                    return;
+                }
+                f = uint.TryParse(s, out price);
             }
+
             TransactionsHandler.Add(ref data, new Transaction(dt, prodId, name, count, price, reg));
         }
         /// <summary>
@@ -139,6 +197,7 @@ namespace project.ConsoleHandler
             try
             {
                 TransactionsHandler.Delete(ref data, id);
+                Console.WriteLine("Удаление успешно завершено");
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -186,7 +245,11 @@ namespace project.ConsoleHandler
                 else if (resp == "цена") { el = Elements.PricePerUnit; break; }
                 else if (resp == "регион") { el = Elements.Region; break; }
                 else if (resp == "-1") { return; }
-                else { Console.WriteLine("Неверное название. Повторите попытку"); }
+                else 
+                {
+                    PrintEditError();
+                    resp = Console.ReadLine();
+                }
             }
             Console.WriteLine("Введите новое значение");
             s = Console.ReadLine();
@@ -200,8 +263,7 @@ namespace project.ConsoleHandler
                     // цикл ввода даты, пока пользователь не введет корректную
                     while (!f)
                     {
-                        Console.WriteLine("Неверное название. Повторите попытку");
-                        Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+                        PrintEditError();
                         s = Console.ReadLine();
                         if (s == "-1") { return; }
                         f = DateTime.TryParse(s, out dt);
@@ -229,8 +291,7 @@ namespace project.ConsoleHandler
                     // цикл ввода региона, пока пользователь не введет корректный
                     while (!f)
                     {
-                        Console.WriteLine("Неверное название. Повторите попытку");
-                        Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+                        PrintEditError();
                         s = Console.ReadLine();
                         if (s == "-1") { return; }
                         f = byte.TryParse(s, out reg);
@@ -250,8 +311,7 @@ namespace project.ConsoleHandler
                     // цикл ввода id товара, количества или цены, пока пользователь не введет корректное значение
                     while (!f)
                     {
-                        Console.WriteLine("Неверное название. Повторите попытку");
-                        Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+                        PrintEditError();
                         s = Console.ReadLine();
                         if (s == "-1") { return; }
                         f = uint.TryParse(s, out val);

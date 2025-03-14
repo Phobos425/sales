@@ -44,7 +44,7 @@ namespace project.edit {
         /// </summary>
         /// <param name="id">id транзакции</param>
         /// <param name="data">список транзакций</param>
-        /// <returns>список транзакций</returns>
+        /// <exception cref="Exception">выбрасывается в случае, если транзакция не найдена</exception>
         public static void Delete(ref List<Transaction> data, uint id)
         {
             if (GetById(data, id) == -1)
@@ -60,7 +60,6 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
         public static void Edit(ref List<Transaction> data, uint id, Elements el, uint val)
         {
@@ -88,7 +87,6 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
         public static void Edit(ref List<Transaction> data, uint id, Elements el, DateTime val)
         {
@@ -108,7 +106,6 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
         public static void Edit(ref List<Transaction> data, uint id, Elements el, string val)
         {
@@ -128,7 +125,6 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="el">элемент транзакции</param>
         /// <param name="val">новое значение</param>
-        /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
         public static void Edit(ref List<Transaction> data, uint id, Elements el, byte val)
         {
