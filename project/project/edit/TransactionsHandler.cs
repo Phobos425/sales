@@ -24,10 +24,10 @@ namespace project.edit {
 					  where el.Id == id
 					  select data.IndexOf(el);
             int res = -1;
-            try
+            foreach (var el in res1)
             {
-                res = res1.GetEnumerator().Current;
-            } catch { }
+                res = el;
+            }
             return res;
 		}
         /// <summary>
@@ -45,10 +45,13 @@ namespace project.edit {
         /// <param name="id">id транзакции</param>
         /// <param name="data">список транзакций</param>
         /// <returns>список транзакций</returns>
-        public static List<Transaction> Delete(List<Transaction> data, uint id)
+        public static void Delete(ref List<Transaction> data, uint id)
         {
+            if (GetById(data, id) == -1)
+            {
+                throw new Exception("Транзакция не найдена");
+            }
             data.RemoveAll(x => x.Id == id);
-            return data;
         }
         /// <summary>
         /// редактирование uint элементов транзакции
@@ -59,7 +62,7 @@ namespace project.edit {
         /// <param name="val">новое значение</param>
         /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
-        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, uint val)
+        public static void Edit(ref List<Transaction> data, uint id, Elements el, uint val)
         {
             int ind = GetById(data, id);
             if (ind == -1)
@@ -77,7 +80,6 @@ namespace project.edit {
                     trans.PricePerUnit = val; break;
             }
             data[ind] = trans;
-            return data;
         }
         /// <summary>
         /// редактирование времени транзакции
@@ -88,7 +90,7 @@ namespace project.edit {
         /// <param name="val">новое значение</param>
         /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
-        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, DateTime val)
+        public static void Edit(ref List<Transaction> data, uint id, Elements el, DateTime val)
         {
             int ind = GetById(data, id);
             if (ind == -1)
@@ -98,7 +100,6 @@ namespace project.edit {
             var trans = data[ind];
             trans.Date = val;
             data[ind] = trans;
-            return data;
         }
         /// <summary>
         /// редактирование названия товара
@@ -109,7 +110,7 @@ namespace project.edit {
         /// <param name="val">новое значение</param>
         /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
-        public static List<Transaction> Edit(List<Transaction> data, uint id, Elements el, string val)
+        public static void Edit(ref List<Transaction> data, uint id, Elements el, string val)
         {
             int ind = GetById(data, id);
             if (ind == -1)
@@ -119,7 +120,6 @@ namespace project.edit {
             var trans = data[ind];
             trans.Name = val;
             data[ind] = trans;
-            return data;
         }
         /// <summary>
         /// редактирование региона транзакции
@@ -130,7 +130,7 @@ namespace project.edit {
         /// <param name="val">новое значение</param>
         /// <returns>список транзакций</returns>
         /// <exception cref="ArgumentException">выбрасывается в случае ввода некорректного id</exception>
-        public static List<Transaction> Edit(ref List<Transaction> data, uint id, Elements el, byte val)
+        public static void Edit(ref List<Transaction> data, uint id, Elements el, byte val)
         {
             int ind = GetById(data, id);
             if (ind == -1)
@@ -140,7 +140,6 @@ namespace project.edit {
             var trans = data[ind];
             trans.Region = val;
             data[ind] = trans;
-            return data;
         }
     }
 }

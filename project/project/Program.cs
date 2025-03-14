@@ -11,7 +11,7 @@ public static class Program
         List<Transaction> transactions = new List<Transaction>();
         ConsoleKeyInfo currKey = new ConsoleKeyInfo('0', ConsoleKey.D0, false, false, false);
         // цикл работы программы
-        while ((isLoaded == (currKey.Key == ConsoleKey.D2)) && (!isLoaded == (currKey.Key == ConsoleKey.D7))) {
+        while (!((!isLoaded && currKey.Key == ConsoleKey.D2) || (isLoaded && currKey.Key == ConsoleKey.D7))) {
             if (!isLoaded)
             {
                 ConsoleHandler.PrintInitialMenu(); // вывод изначального меню
@@ -41,7 +41,13 @@ public static class Program
                     case ConsoleKey.D2: // вывод транзакций
                         ConsoleHandler.PrintInfo(ref transactions); break;
                     case ConsoleKey.D3: // добавление транзакции
-                        ConsoleHandler.Add(ref transactions); break;
+                        try {
+                            ConsoleHandler.Add(ref transactions);
+                        } catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                        break;
                     case ConsoleKey.D4: // удаление транзакции
                         ConsoleHandler.Delete(ref transactions); break;
                     case ConsoleKey.D5: // изменение транзакции

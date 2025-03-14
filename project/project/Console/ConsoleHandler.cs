@@ -86,17 +86,33 @@ namespace project.ConsoleHandler
             Console.WriteLine("Введите дату создания транзакции");
             DateTime dt;
             bool f = DateTime.TryParse(Console.ReadLine(), out dt);
+            if (!f)
+            {
+                throw new ArgumentException("Неверная запись транзакции");
+            }
             Console.WriteLine("Введите id товара");
             uint prodId;
             f &= uint.TryParse(Console.ReadLine(), out prodId);
+            if (!f)
+            {
+                throw new ArgumentException("Неверная запись транзакции");
+            }
             Console.WriteLine("Введите название товара");
             string name = Console.ReadLine();
             uint count;
             Console.WriteLine("Введите количество товара");
             f &= uint.TryParse(Console.ReadLine(), out count);
+            if (!f)
+            {
+                throw new ArgumentException("Неверная запись транзакции");
+            }
             uint price;
             Console.WriteLine("Введите цену за еденицу");
             f &= uint.TryParse(Console.ReadLine(), out price);
+            if (!f)
+            {
+                throw new ArgumentException("Неверная запись транзакции");
+            }
             byte reg;
             Console.WriteLine("Введите номер региона");
             f &= byte.TryParse(Console.ReadLine(), out reg);
@@ -120,7 +136,13 @@ namespace project.ConsoleHandler
                 Console.WriteLine("Неверный id");
                 return;
             }
-            data = TransactionsHandler.Delete(data, id);
+            try
+            {
+                TransactionsHandler.Delete(ref data, id);
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            } 
         }
         /// <summary>
         /// изменение транзакции
@@ -186,7 +208,7 @@ namespace project.ConsoleHandler
                     }
                     try
                     {
-                        data = TransactionsHandler.Edit(data, id, el, dt);
+                        TransactionsHandler.Edit(ref data, id, el, dt);
                     } catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
@@ -195,7 +217,7 @@ namespace project.ConsoleHandler
                 case Elements.Name:
                     try
                     {
-                        data = TransactionsHandler.Edit(data, id, el, s);
+                        TransactionsHandler.Edit(ref data, id, el, s);
                     } catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
@@ -215,7 +237,7 @@ namespace project.ConsoleHandler
                     }
                     try
                     {
-                        data = TransactionsHandler.Edit(data, id, el, reg);
+                        TransactionsHandler.Edit(ref data, id, el, reg);
                     }
                     catch (Exception e)
                     {
@@ -236,7 +258,7 @@ namespace project.ConsoleHandler
                     }
                     try
                     {
-                        data = TransactionsHandler.Edit(data, id, el, val);
+                        TransactionsHandler.Edit(ref data, id, el, val);
                     }
                     catch (Exception e)
                     {
