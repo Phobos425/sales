@@ -11,7 +11,7 @@ public static class Program
         List<Transaction> transactions = new List<Transaction>();
         ConsoleKeyInfo currKey = new ConsoleKeyInfo('0', ConsoleKey.D0, false, false, false);
         // цикл работы программы
-        while (!((!isLoaded && currKey.Key == ConsoleKey.D2) || (isLoaded && currKey.Key == ConsoleKey.D7))) {
+        while (currKey.Key != ConsoleKey.Escape) {
             if (!isLoaded)
             {
                 ConsoleHandler.PrintInitialMenu(); // вывод изначального меню
@@ -22,7 +22,7 @@ public static class Program
                     case ConsoleKey.D1:
                         isLoaded = ConsoleHandler.DownloadData(ref  transactions); // загрузка данных и её результат
                         break;
-                    case ConsoleKey.D2: // выход из программы
+                    case ConsoleKey.Escape: // выход из программы
                         Console.WriteLine("Работа завершена");
                         break;
                     default:
@@ -37,7 +37,8 @@ public static class Program
                 switch (currKey.Key)
                 {
                     case ConsoleKey.D1: // загрузка новых данных, в случае неудачи сохраняется старая бд
-                        ConsoleHandler.DownloadData(ref transactions); break;
+                        ConsoleHandler.DownloadData(ref transactions);
+                        break;
                     case ConsoleKey.D2: // вывод транзакций
                         ConsoleHandler.PrintInfo(ref transactions); break;
                     case ConsoleKey.D3: // добавление транзакции
@@ -52,11 +53,14 @@ public static class Program
                         ConsoleHandler.Delete(ref transactions); break;
                     case ConsoleKey.D5: // изменение транзакции
                         ConsoleHandler.Edit(ref transactions); break;
-                    case ConsoleKey.D6: // сохранение данных
+                    case ConsoleKey.D6:
+                        ConsoleHandler.PrintRegionInfo(ref transactions); break;
+                        break;
+                    case ConsoleKey.D7: // сохранение данных
                         FileHandler.WriteData(transactions);
                         Console.WriteLine("Данные успешно сохранены");
                         break;
-                    case ConsoleKey.D7: // выход из программы
+                    case ConsoleKey.Escape: // выход из программы
                         Console.WriteLine("Работа завершена");
                         break;
                     default:

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using project.db;
 using System.Globalization;
+using project.edit;
+using System.Security.Cryptography.X509Certificates;
 
 namespace project.ConsoleHandler
 {
@@ -20,7 +22,7 @@ namespace project.ConsoleHandler
         public static void PrintInitialMenu()
         {
             Console.WriteLine("1. Загрузить данные из файла");
-            Console.WriteLine("2. Выйти");
+            Console.WriteLine("Esc. Выход");
         }
         /// <summary>
         /// вывод обычного меню
@@ -32,8 +34,70 @@ namespace project.ConsoleHandler
             Console.WriteLine("3. Добавление новой транзакции");
             Console.WriteLine("4. Удаление транзакции");
             Console.WriteLine("5. Редактирование транзакции");
-            Console.WriteLine("6. Сохранение данных");
+            Console.WriteLine("6. Вывести статистику по регионам");
+            Console.WriteLine("7. Сохранение данных");
             Console.WriteLine("Esc. Выход");
+        }
+        public static void PrintRegionInfo(ref List<Transaction> transactions)
+        {
+            int pageSize = 5;  // Количество строк на экране
+            int shift = 0;     // Смещение (прокрутка)
+            // с помощью Linq запроса к transactions получаем сумму покупок по регионам
+            var res = from el in transactions
+                      group el by el.Region
+                      into g
+                      select new { Region = g.Key, Count = g.Sum(el => el.Count * el.PricePerUnit) };
+            res = res.OrderByDescending(el => el.Count); // сортируем результат по сумме транзакций
+            sbyte sort = 0;
+            var sorted = res;
+            while (true)
+            {
+                Console.Clear();
+
+                // сортировка данных
+                if (sort == 1)
+                {
+                    sorted = sorted.OrderBy(el => el.Region);
+                } else if (sort == -1)
+                {
+                    sorted = sorted.OrderByDescending(el => el.Region);
+                } else
+                {
+                    sorted = res;
+                }
+
+                // инициализация таблицы
+                var table = new Table().AddColumn(new TableColumn("Регион")).AddColumn(new TableColumn("Сумма продаж"));
+                // добавление строк
+                foreach (var el in sorted.Skip(shift).Take(pageSize))
+                {
+                    table.AddRow(el.Region.ToString(), el.Count.ToString());
+                }
+                AnsiConsole.Render(table);
+
+                Console.WriteLine("\nИспользуйте ↑ ↓ для прокрутки, 2 - Сортировка во возрастанию," +
+                    " 5 - убрать сортировку, 8 - сортировка по убыванию, Esc - выход");
+
+                var key = Console.ReadKey().Key;
+                if (key == ConsoleKey.DownArrow && shift + pageSize < sorted.Count()) { ++shift; }
+                else if (key == ConsoleKey.UpArrow && shift > 0) { --shift; }
+                else if (key == ConsoleKey.Escape) { break; }
+                else if (key == ConsoleKey.D2)
+                {
+                    sort = 1;
+                    shift = 0;
+                }
+                else if (key == ConsoleKey.D5)
+                {
+                    sort = 0;
+                    shift = 0;
+                }
+                else if (key == ConsoleKey.D8)
+                {
+                    sort = -1;
+                    shift = 0;
+                }
+            }
         }
         /// <summary>
         /// вывод информации о транзакциях
@@ -125,7 +189,7 @@ namespace project.ConsoleHandler
                     try
                     {
                         byte tmp = byte.Parse(Console.ReadLine());
-                        if (tmp > 85)
+                        if (tmp > 89)
                         {
                             throw new Exception();
                         }
@@ -310,8 +374,9 @@ namespace project.ConsoleHandler
         /// <exception cref="ArgumentException">выбрасывается в случае неверно введенной транзакции</exception>
         public static void Add(ref List<Transaction> data)
         {
-            //дальше идут блоки инициализации траназакции, в случае ввода -1, пользователя возвращает в главное меню
+            // дальше идут блоки инициализации траназакции, в случае ввода -1, пользователя возвращает в главное меню
 
+            // дата
             Console.WriteLine("Введите дату создания транзакции");
             Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
             DateTime dt;
@@ -328,6 +393,7 @@ namespace project.ConsoleHandler
                 f = DateTime.TryParse(s, out dt);
             }
 
+            // id товара
             Console.WriteLine("Введите id товара");
             uint prodId;
             s = Console.ReadLine();
@@ -343,10 +409,12 @@ namespace project.ConsoleHandler
                 f = uint.TryParse(s, out prodId);
             }
 
+            // название
             Console.WriteLine("Введите название товара");
             string name = Console.ReadLine();
             uint count;
 
+            // количество
             Console.WriteLine("Введите количество товара");
             s = Console.ReadLine();
             f = uint.TryParse(s, out count);
@@ -361,8 +429,9 @@ namespace project.ConsoleHandler
                 f = uint.TryParse(s, out count);
             }
 
+            // цена за единицу
             uint price;
-            Console.WriteLine("Введите цену за еденицу");
+            Console.WriteLine("Введите цену за единицу");
             s = Console.ReadLine();
             f &= uint.TryParse(s, out price);
             while (!f)
@@ -376,6 +445,7 @@ namespace project.ConsoleHandler
                 f = uint.TryParse(s, out price);
             }
 
+            // регион
             byte reg;
             Console.WriteLine("Введите номер региона");
             s = Console.ReadLine();
@@ -402,11 +472,14 @@ namespace project.ConsoleHandler
             Console.WriteLine("Введите id транзакции, которую хотите удалить");
             uint id;
             bool f = uint.TryParse(Console.ReadLine(), out id);
+
+            // проверка на то, что ввели возможное значение id
             if (!f)
             {
                 Console.WriteLine("Неверный id");
                 return;
             }
+            // попытка удалить транзакцию
             try
             {
                 TransactionsHandler.Delete(ref data, id);
