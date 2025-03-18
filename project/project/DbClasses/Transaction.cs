@@ -1,4 +1,5 @@
-﻿using System;
+﻿using project.DbClasses;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -32,7 +33,9 @@ namespace project.db
         public uint ProdId { get; set; } // id товара
         public string Name { get; set; } // Наименование товара
         public uint Count { get; set; } // Количество
-        public uint PricePerUnit { get; set; } // Цена за единицу
+        public double PricePerUnit { get; private set; } // Цена за единицу в рублях
+        public double PriceInCurrency {  get; set; } // Цена за единицу в валюте
+        public string Currency { get; set; } // код валюты
         private byte _region; // регион транзакции
         public byte Region
         {
@@ -51,6 +54,7 @@ namespace project.db
                 }
             }
         }
+
         /// <summary>
         /// конструктор класса
         /// </summary>
@@ -58,16 +62,20 @@ namespace project.db
         /// <param name="prodId">id товара</param>
         /// <param name="name">наименование товара</param>
         /// <param name="count">количество товаров</param>
-        /// <param name="pricePerUnit">цена за шт</param>
+        /// <param name="priceInCurrency">цена за шт в валюте</param>
+        /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
-        public Transaction(DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
+        public Transaction(DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
         {
             Id = _newId;
             Date = date;
             ProdId = prodId;
             Name = name;
             Count = count;
-            PricePerUnit = pricePerUnit;
+            PriceInCurrency = priceInCurrency;
+            Currency = currency;
+            string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";
+            PricePerUnit = CurrencyConverter.CurToRub(PriceInCurrency, Currency, dt);
             Region = region;
             ++_newId;
         }
@@ -79,9 +87,10 @@ namespace project.db
         /// <param name="prodId">id товара</param>
         /// <param name="name">наименование товара</param>
         /// <param name="count">количество товаров</param>
-        /// <param name="pricePerUnit">цена за шт</param>
+        /// <param name="priceInCurrency">цена за шт в валюте</param>
+        /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
-        public Transaction(uint id, DateTime date, uint prodId, string name, uint count, uint pricePerUnit, byte region)
+        public Transaction(uint id, DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
         {
             _newId = Math.Max(id + 1, _newId);
             Id = id;
@@ -89,13 +98,16 @@ namespace project.db
             ProdId = prodId;
             Name = name;
             Count = count;
-            PricePerUnit = pricePerUnit;
+            PriceInCurrency = priceInCurrency;
+            Currency = currency;
+            string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";
+            PricePerUnit = CurrencyConverter.CurToRub(PriceInCurrency, Currency, dt);
             Region = region;
         }
         public override string ToString()
         {
             return $"{Id};{Date.ToString(new CultureInfo("ru-RU"))[0..10]};{ProdId};" +
-                $"{Name};{Count};{PricePerUnit};{Region}";
+                $"{Name};{Count};{PricePerUnit:f2};{PriceInCurrency:f2};{Currency};{Region}";
         }
     }
 }

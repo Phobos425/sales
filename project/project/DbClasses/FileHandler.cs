@@ -63,9 +63,12 @@ namespace project.db
                 // получение количества товаров
                 uint count;
                 f &= uint.TryParse(s[4], out count);
-                // получение цены 1шт
-                uint price;
-                f &= uint.TryParse(s[5], out price);
+                // получение цены 1шт в рублях
+                double price;
+                f &= double.TryParse(s[5], out price);
+                // получение цены 1шт в валюте
+                double priceCur;
+                f &= double.TryParse(s[5], out priceCur);
                 // получение региона
                 byte reg;
                 f &= byte.TryParse(s[6], out reg);
