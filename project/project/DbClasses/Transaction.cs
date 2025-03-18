@@ -33,7 +33,7 @@ namespace project.db
         public uint ProdId { get; set; } // id товара
         public string Name { get; set; } // Наименование товара
         public uint Count { get; set; } // Количество
-        public double PricePerUnit { get; private set; } // Цена за единицу в рублях
+        public double PricePerUnit { get; set; } // Цена за единицу в рублях
         public double PriceInCurrency {  get; set; } // Цена за единицу в валюте
         public string Currency { get; set; } // код валюты
         private byte _region; // регион транзакции
@@ -65,13 +65,14 @@ namespace project.db
         /// <param name="priceInCurrency">цена за шт в валюте</param>
         /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
-        public Transaction(DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
+        public Transaction(DateTime date, uint prodId, string name, uint count,double priceInRub, double priceInCurrency, string currency, byte region)
         {
             Id = _newId;
             Date = date;
             ProdId = prodId;
             Name = name;
             Count = count;
+            PricePerUnit = priceInRub;
             PriceInCurrency = priceInCurrency;
             Currency = currency;
             string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";
@@ -90,7 +91,7 @@ namespace project.db
         /// <param name="priceInCurrency">цена за шт в валюте</param>
         /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
-        public Transaction(uint id, DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
+        public Transaction(uint id, DateTime date, uint prodId, string name, uint count, double priceInRub, double priceInCurrency, string currency, byte region)
         {
             _newId = Math.Max(id + 1, _newId);
             Id = id;
@@ -98,6 +99,7 @@ namespace project.db
             ProdId = prodId;
             Name = name;
             Count = count;
+            PricePerUnit = priceInRub;
             PriceInCurrency = priceInCurrency;
             Currency = currency;
             string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";

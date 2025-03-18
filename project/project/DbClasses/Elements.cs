@@ -13,6 +13,8 @@ namespace project.db
         Name,
         Count,
         PricePerUnit,
+        PriceInCurrency,
+        Currency,
         Region
     }
 }

@@ -46,7 +46,7 @@ namespace project.ConsoleHandler
             var res = from el in transactions
                       group el by el.Region
                       into g
-                      select new { Region = g.Key, Count = g.Sum(el => el.Count * el.PricePerUnit) };
+                      select new { Region = g.Key, Count= g.Sum(el => el.Count * el.PricePerUnit) };
             res = res.OrderByDescending(el => el.Count); // сортируем результат по сумме транзакций
             sbyte sort = 0;
             var sorted = res;
@@ -159,7 +159,9 @@ namespace project.ConsoleHandler
 
                 var table = new Table();
 
-                string[] names = ["ID", "Date", "Product ID", "Product name", "Count", "Price/Unit", "Region"]; // имена столбцов
+                // имена столбцов
+                string[] names = ["ID", "Дата", "ID продукта", "название", "количество", "цена/шт в рублях",
+                    "цена/шт в валюте", "валюта", "Region"];
 
                 // добавление столбцов
                 for (int i = 0; i < names.Length; i++)

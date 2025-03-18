@@ -68,16 +68,18 @@ namespace project.db
                 f &= double.TryParse(s[5], out price);
                 // получение цены 1шт в валюте
                 double priceCur;
-                f &= double.TryParse(s[5], out priceCur);
+                f &= double.TryParse(s[6], out priceCur);
+                // получение валюты
+                string currency = s[7];
                 // получение региона
                 byte reg;
-                f &= byte.TryParse(s[6], out reg);
+                f &= byte.TryParse(s[8], out reg);
                 // проверка, что все данные верны
                 if (!f)
                 {
                     throw new ArgumentException("Неверная запись транзакции");
                 }
-                tmp.Add(new Transaction(id, dt, prodId, name, count, price, reg));
+                tmp.Add(new Transaction(id, dt, prodId, name, count, price, priceCur, currency, reg));
             }
             if (tmp.Count == 0) {
                 throw new Exception("Пустой файл");

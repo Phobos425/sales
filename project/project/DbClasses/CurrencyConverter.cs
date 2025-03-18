@@ -12,7 +12,6 @@ namespace project.DbClasses
     /// </summary>
     public static class CurrencyConverter
     {
-        private static List<string> _currencies;
         /// <summary>
         /// метод, который использует API центробанка возвращает курс валюты
         /// </summary>
@@ -87,41 +86,6 @@ namespace project.DbClasses
         {
             var rate = GetExchangeRate(date, currencyCode);
             return count * rate.Result;
-        }
-        /// <summary>
-        /// проверка, что есть курс конвекртации с данной валюты
-        /// </summary>
-        /// <param name="currencyCode"></param>
-        /// <returns></returns>
-        public static bool IsValid(string currencyCode)
-        {
-            return _currencies.Contains(currencyCode);
-        }
-        public static async void GetAllCurrencyCodes()
-        {
-            string url = "https://www.cbr.ru/scripts/XML_valutacycles.asp";
-
-            using HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(url);
-
-            string xml = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("Ответ от сервера:\n" + xml);  // Выводим ответ для диагностики
-
-            XDocument doc = XDocument.Parse(xml);
-
-            // Список всех кодов валют (CharCode)
-            var currencyCodes = new List<string>();
-
-            foreach (var currency in doc.Descendants("Valute"))
-            {
-                var charCode = currency.Element("CharCode")?.Value;
-                if (!string.IsNullOrEmpty(charCode))
-                {
-                    currencyCodes.Add(charCode);
-                }
-            }
-
-            _currencies = currencyCodes;
         }
     }
 }
