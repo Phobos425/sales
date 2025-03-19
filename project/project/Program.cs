@@ -40,12 +40,12 @@ public static class Program
                 Console.Clear();
                 switch (currKey.Key)
                 {
-                    case ConsoleKey.D1: // загрузка новых данных, в случае неудачи сохраняется старая бд
+                    case ConsoleKey.D: // загрузка новых данных, в случае неудачи сохраняется старая бд
                         ConsoleHandler.DownloadData(ref transactions);
                         break;
-                    case ConsoleKey.D2: // вывод транзакций
+                    case ConsoleKey.D1: // вывод транзакций
                         ConsoleHandler.PrintInfo(ref transactions); break;
-                    case ConsoleKey.D3: // добавление транзакции
+                    case ConsoleKey.D2: // добавление транзакции
                         try {
                             ConsoleHandler.Add(ref transactions);
                         } catch (Exception e)
@@ -53,15 +53,19 @@ public static class Program
                             Console.WriteLine(e.Message);
                         }
                         break;
-                    case ConsoleKey.D4: // удаление транзакции
+                    case ConsoleKey.D3: // удаление транзакции
                         ConsoleHandler.Delete(ref transactions); break;
-                    case ConsoleKey.D5: // изменение транзакции
+                    case ConsoleKey.D4: // изменение транзакции
                         ConsoleHandler.Edit(ref transactions); break;
-                    case ConsoleKey.D6:
+                    case ConsoleKey.D5: // вывод информации по регионам
                         ConsoleHandler.PrintRegionInfo(ref transactions); break;
-                    case ConsoleKey.D7:
+                    case ConsoleKey.D6: // вывод суммы всех транзакций
                         ConsoleHandler.PrintAllSales(ref transactions); break;
-                    case ConsoleKey.D8: // сохранение данных
+                    case ConsoleKey.D7: // вывод ABC анализа
+                        ConsoleHandler.PrintABCAnalysis(ref transactions); break;
+                    case ConsoleKey.D8: // вывод XYZ анализа
+                        ConsoleHandler.PrintXYZAnalysis(ref transactions); break;
+                    case ConsoleKey.S: // сохранение данных
                         FileHandler.WriteData(transactions);
                         Console.WriteLine("Данные успешно сохранены");
                         break;

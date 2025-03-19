@@ -9,6 +9,7 @@ using System.Globalization;
 using project.edit;
 using System.Security.Cryptography.X509Certificates;
 using project.DbClasses;
+using project.Analysis;
 
 namespace project.ConsoleHandler
 {
@@ -30,14 +31,16 @@ namespace project.ConsoleHandler
         /// </summary>
         public static void PrintMenu()
         {
-            Console.WriteLine("1. Загрузить данные из файла");
-            Console.WriteLine("2. Просмотр всех транзакций");
-            Console.WriteLine("3. Добавление новой транзакции");
-            Console.WriteLine("4. Удаление транзакции");
-            Console.WriteLine("5. Редактирование транзакции");
-            Console.WriteLine("6. Вывести статистику по регионам");
-            Console.WriteLine("7. Вывести сумму всех транзакций");
-            Console.WriteLine("8. Сохранение данных");
+            Console.WriteLine("D. Загрузить данные из файла");
+            Console.WriteLine("1. Просмотр всех транзакций");
+            Console.WriteLine("2. Добавление новой транзакции");
+            Console.WriteLine("3. Удаление транзакции");
+            Console.WriteLine("4. Редактирование транзакции");
+            Console.WriteLine("5. Вывести статистику по регионам");
+            Console.WriteLine("6. Вывести сумму всех транзакций");
+            Console.WriteLine("7. Сделать ABC анализ");
+            Console.WriteLine("8. Сделать XYZ анализ");
+            Console.WriteLine("S. Сохранение данных");
             Console.WriteLine("Esc. Выход");
         }
         public static void PrintRegionInfo(ref List<Transaction> transactions)
@@ -60,16 +63,19 @@ namespace project.ConsoleHandler
                 if (sort == 1)
                 {
                     sorted = sorted.OrderBy(el => el.Region);
-                } else if (sort == -1)
+                }
+                else if (sort == -1)
                 {
                     sorted = sorted.OrderByDescending(el => el.Region);
-                } else
+                }
+                else
                 {
                     sorted = res;
                 }
 
                 // инициализация таблицы
                 var table = new Table().AddColumn(new TableColumn("Регион")).AddColumn(new TableColumn("Сумма продаж"));
+                table.ShowRowSeparators = true;
                 // добавление строк
                 foreach (var el in sorted.Skip(shift).Take(pageSize))
                 {
@@ -154,12 +160,14 @@ namespace project.ConsoleHandler
                 if (sort == 1)
                 {
                     filtered = filtered.OrderBy(x => x.Date);
-                } else if (sort == -1)
+                }
+                else if (sort == -1)
                 {
                     filtered = filtered.OrderByDescending(x => x.Date);
                 }
 
                 var table = new Table();
+                table.ShowRowSeparators = true;
 
                 // имена столбцов
                 string[] names = ["ID", "Дата", "ID продукта", "название", "количество", "цена/шт в рублях",
@@ -378,6 +386,52 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
+        /// вывод ABC анализа
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
+        public static void PrintABCAnalysis(ref List<Transaction> transactions)
+        {
+            var abc = Analisator.ABCAnalysis(ref transactions); // ABC анлиз
+
+            // создаем таблицу и шапку
+            var table = new Table();
+            table.ShowRowSeparators = true;
+            table.AddColumn("Категория");
+            table.AddColumn("Продукты");
+
+            // добавляем ряды
+            foreach (var el in abc)
+            {
+                string products = string.Join('\n', el.Value);
+                table.AddRow(el.Key, products);
+            }
+
+            AnsiConsole.Render(table);
+        }
+        /// <summary>
+        /// вывод XYZ анализа
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
+        public static void PrintXYZAnalysis(ref List<Transaction> transactions)
+        {
+            var xyz = Analisator.XYZAnalysis(ref transactions); // XYZ анлиз
+
+            // создаем таблицу и шапку
+            var table = new Table();
+            table.ShowRowSeparators = true;
+            table.AddColumn("Категория");
+            table.AddColumn("Продукты");
+
+            // добавляем ряды
+            foreach (var el in xyz)
+            {
+                string products = string.Join('\n', el.Value);
+                table.AddRow(el.Key, products);
+            }
+
+            AnsiConsole.Render(table);
+        }
+        /// <summary>
         /// Вывод ошибки при добавлении транзакции
         /// </summary>
         public static void PrintAddError()
@@ -541,7 +595,8 @@ namespace project.ConsoleHandler
             {
                 TransactionsHandler.Delete(ref data, id);
                 Console.WriteLine("Удаление успешно завершено");
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             } 
@@ -616,7 +671,8 @@ namespace project.ConsoleHandler
                     try
                     {
                         TransactionsHandler.Edit(ref data, id, el, dt);
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }
@@ -625,7 +681,8 @@ namespace project.ConsoleHandler
                     try
                     {
                         TransactionsHandler.Edit(ref data, id, el, s);
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }

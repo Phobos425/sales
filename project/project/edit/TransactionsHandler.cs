@@ -21,15 +21,10 @@ namespace project.edit {
         /// <returns>индекс транзакции</returns>
         private static int GetById(List<Transaction> data, uint id)
 		{
-		    var res1 = from el in data
+		    var res = from el in data
 					  where el.Id == id
 					  select data.IndexOf(el);
-            int res = -1;
-            foreach (var el in res1)
-            {
-                res = el;
-            }
-            return res;
+            return res.Count() > 0 ? res.ToList()[0] : -1;
 		}
         /// <summary>
         /// считает сумму всех транзакций в выбранной валюте
