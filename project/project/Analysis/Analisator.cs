@@ -16,7 +16,7 @@ namespace project.Analysis
         /// метод, делающий ABC анализ
         /// </summary>
         /// <param name="transactions">список транзакций</param>
-        /// <returns>ABC анализ</returns>
+        /// <returns>разделение товаров на категории</returns>
         public static Dictionary<string, List<string>> ABCAnalysis(ref List<Transaction> transactions)
         {
             // создаем список с результатом
@@ -54,6 +54,11 @@ namespace project.Analysis
             }
             return res;
         }
+        /// <summary>
+        /// XYZ анализ
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
+        /// <returns>разделение товаров на категории</returns>
         public static Dictionary<string, List<string>> XYZAnalysis(ref List<Transaction> transactions)
         {
             // создаем список с результатом
@@ -89,6 +94,28 @@ namespace project.Analysis
                 }
             }
 
+            return res;
+        }
+        /// <summary>
+        /// предсказание продаж на следующий месяц, исполязуя метод скользящего среднего сглаживания за последние 3 месяца
+        /// </summary>
+        /// <param name="transactions">список продаж</param>
+        /// <returns>предсказание продаж</returns>
+        public static Dictionary<string, uint> Forecast(ref List<Transaction> transactions)
+        {
+            var res = new Dictionary<string, uint>(); // создание словаря с ответом
+
+            // группировка количества проданного товара по названию за последний квартал
+            var tmp = from el in transactions
+                      where DateTime.Now.Month - el.Date.Month < 3
+                      group el by el.Name
+                      into g
+                      select new { Name = g.Key, Value = g.Sum(el => el.Count)};
+
+            foreach (var el in tmp)
+            {
+                res.Add(el.Name, (uint)(el.Value / 3));
+            }
             return res;
         }
     }

@@ -15,7 +15,7 @@ public static class Program
         List<Transaction> transactions = new List<Transaction>();
         ConsoleKeyInfo currKey = new ConsoleKeyInfo('0', ConsoleKey.D0, false, false, false);
         // цикл работы программы
-        while (currKey.Key != ConsoleKey.Escape) {
+        while (currKey.Key != ConsoleKey.Backspace) {
             if (!isLoaded)
             {
                 ConsoleHandler.PrintInitialMenu(); // вывод изначального меню
@@ -26,7 +26,7 @@ public static class Program
                     case ConsoleKey.D1:
                         isLoaded = ConsoleHandler.DownloadData(ref  transactions); // загрузка данных и её результат
                         break;
-                    case ConsoleKey.Escape: // выход из программы
+                    case ConsoleKey.Backspace: // выход из программы
                         Console.WriteLine("Работа завершена");
                         break;
                     default:
@@ -36,7 +36,7 @@ public static class Program
             } else
             {
                 ConsoleHandler.PrintMenu();
-                currKey = Console.ReadKey();
+                currKey = Console.ReadKey(true);
                 Console.Clear();
                 switch (currKey.Key)
                 {
@@ -65,11 +65,13 @@ public static class Program
                         ConsoleHandler.PrintABCAnalysis(ref transactions); break;
                     case ConsoleKey.D8: // вывод XYZ анализа
                         ConsoleHandler.PrintXYZAnalysis(ref transactions); break;
+                    case ConsoleKey.D9: // вывод прогноза
+                        ConsoleHandler.PrintForecast(ref transactions); break;
                     case ConsoleKey.S: // сохранение данных
                         FileHandler.WriteData(transactions);
                         Console.WriteLine("Данные успешно сохранены");
                         break;
-                    case ConsoleKey.Escape: // выход из программы
+                    case ConsoleKey.Backspace: // выход из программы
                         Console.WriteLine("Работа завершена");
                         break;
                     default:

@@ -14,20 +14,20 @@ using project.Analysis;
 namespace project.ConsoleHandler
 {
     /// <summary>
-    /// класс для вывода в консоль
+    /// Класс для вывода в консоль
     /// </summary>
     public static class ConsoleHandler
     {
         /// <summary>
-        /// вывод изначального меню
+        /// Вывод изначального меню
         /// </summary>
         public static void PrintInitialMenu()
         {
             Console.WriteLine("1. Загрузить данные из файла");
-            Console.WriteLine("Esc. Выход");
+            Console.WriteLine("Backspace. Выход");
         }
         /// <summary>
-        /// вывод обычного меню
+        /// Вывод обычного меню
         /// </summary>
         public static void PrintMenu()
         {
@@ -40,9 +40,14 @@ namespace project.ConsoleHandler
             Console.WriteLine("6. Вывести сумму всех транзакций");
             Console.WriteLine("7. Сделать ABC анализ");
             Console.WriteLine("8. Сделать XYZ анализ");
+            Console.WriteLine("9. Сделать прогноз по продажам на следующий месяц");
             Console.WriteLine("S. Сохранение данных");
-            Console.WriteLine("Esc. Выход");
+            Console.WriteLine("Backspace. Выход");
         }
+        /// <summary>
+        /// Вывод информации о суммарных продажах в регионе
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
         public static void PrintRegionInfo(ref List<Transaction> transactions)
         {
             int pageSize = 5;  // Количество строк на экране
@@ -74,7 +79,7 @@ namespace project.ConsoleHandler
                 }
 
                 // инициализация таблицы
-                var table = new Table().AddColumn(new TableColumn("Регион")).AddColumn(new TableColumn("Сумма продаж"));
+                var table = new Table().AddColumn(new TableColumn("Регион").Centered()).AddColumn(new TableColumn("Сумма продаж").Centered());
                 table.ShowRowSeparators = true;
                 // добавление строк
                 foreach (var el in sorted.Skip(shift).Take(pageSize))
@@ -84,12 +89,12 @@ namespace project.ConsoleHandler
                 AnsiConsole.Render(table);
 
                 Console.WriteLine("\nИспользуйте ↑ ↓ для прокрутки, 2 - Сортировка во возрастанию," +
-                    " 5 - убрать сортировку, 8 - сортировка по убыванию, Esc - выход");
+                    " 5 - убрать сортировку, 8 - сортировка по убыванию, Backspace - выход");
 
                 var key = Console.ReadKey().Key;
                 if (key == ConsoleKey.DownArrow && shift + pageSize < sorted.Count()) { ++shift; }
                 else if (key == ConsoleKey.UpArrow && shift > 0) { --shift; }
-                else if (key == ConsoleKey.Escape) { break; }
+                else if (key == ConsoleKey.Backspace) { break; }
                 else if (key == ConsoleKey.D2)
                 {
                     sort = 1;
@@ -108,7 +113,7 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
-        /// вывод информации о транзакциях
+        /// Вывод информации о транзакциях
         /// </summary>
         /// <param name="transactions">список покупок</param>
         public static void PrintInfo(ref List<Transaction> transactions)
@@ -135,7 +140,7 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
-        /// вывод информации о покупках таблицей
+        /// Вывод информации о покупках таблицей
         /// </summary>
         /// <param name="transactions">список покупок</param>
         private static void PrintTable(ref List<Transaction> transactions)
@@ -189,12 +194,12 @@ namespace project.ConsoleHandler
 
                 Console.WriteLine(filter != 0 ?$"\nФильтр: {filter}" : "Фильтр не установлен");
                 Console.WriteLine("\nИспользуйте ↑ ↓ для прокрутки, F - изменить(установить) фильтр," +
-                    " 2 - Сортировка во возрастанию, 5 - убрать сортировку, 8 - сортировка по убыванию, Esc - выход");
+                    " 2 - Сортировка во возрастанию, 5 - убрать сортировку, 8 - сортировка по убыванию, Backspace - выход");
 
                 var key = Console.ReadKey().Key;
                 if (key == ConsoleKey.DownArrow && shift + pageSize < filtered.Count()) { ++shift; }
                 else if (key == ConsoleKey.UpArrow && shift > 0) { --shift; }
-                else if (key == ConsoleKey.Escape) { break; }
+                else if (key == ConsoleKey.Backspace) { break; }
                 else if (key == ConsoleKey.F)
                 {
                     Console.WriteLine("\nВведите фильтр");
@@ -227,7 +232,7 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
-        /// ввод даты для отображения информации о транзакциях
+        /// Ввод даты для отображения информации о транзакциях
         /// </summary>
         /// <param name="s1">начало или конец</param>
         /// <returns>дату</returns>
@@ -294,17 +299,17 @@ namespace project.ConsoleHandler
                 }
                 AnsiConsole.Write(chart);
 
-                Console.WriteLine("\nИспользуйте ↑ ↓ для прокрутки, Esc - выход");
+                Console.WriteLine("\nИспользуйте ↑ ↓ для прокрутки, Backspace - выход");
 
                 var key = Console.ReadKey().Key;
                 if (key == ConsoleKey.DownArrow && dt1.AddDays(shift) < dt2) { ++shift; }
                 else if (key == ConsoleKey.UpArrow && shift > 0) { --shift; }
-                else if (key == ConsoleKey.Escape) { break; }
+                else if (key == ConsoleKey.Backspace) { break; }
                 Console.Clear();
             }
         }
         /// <summary>
-        /// выводит информацию с помощью breakdown chart'а
+        /// Выводит информацию с помощью breakdown chart'а
         /// </summary>
         /// <param name="transactions">список транзакций</param>
         private static void PrintBreakdownChart(ref List<Transaction> transactions)
@@ -355,7 +360,7 @@ namespace project.ConsoleHandler
             {
                 Console.WriteLine("1. Вывести сумму по курсу на дату транзакции");
                 Console.WriteLine("2. Вывести сумму по текущему курсу");
-                Console.WriteLine("Esc. Вернуться в главное меню");
+                Console.WriteLine("Backspace. Вернуться в главное меню");
 
                 var key = Console.ReadKey().Key;
                 Console.Clear();
@@ -368,7 +373,7 @@ namespace project.ConsoleHandler
                         dt = DateTime.Now;
                         flag = false;
                         break;
-                    case ConsoleKey.Escape:
+                    case ConsoleKey.Backspace:
                         return;
                     default:
                         Console.WriteLine("Неверная кнопка");
@@ -386,7 +391,7 @@ namespace project.ConsoleHandler
             }
         }
         /// <summary>
-        /// вывод ABC анализа
+        /// Вывод ABC анализа
         /// </summary>
         /// <param name="transactions">список транзакций</param>
         public static void PrintABCAnalysis(ref List<Transaction> transactions)
@@ -396,8 +401,8 @@ namespace project.ConsoleHandler
             // создаем таблицу и шапку
             var table = new Table();
             table.ShowRowSeparators = true;
-            table.AddColumn("Категория");
-            table.AddColumn("Продукты");
+            table.AddColumn(new TableColumn("Категория").Centered());
+            table.AddColumn(new TableColumn("Продукты").Centered());
 
             // добавляем ряды
             foreach (var el in abc)
@@ -409,7 +414,7 @@ namespace project.ConsoleHandler
             AnsiConsole.Render(table);
         }
         /// <summary>
-        /// вывод XYZ анализа
+        /// Вывод XYZ анализа
         /// </summary>
         /// <param name="transactions">список транзакций</param>
         public static void PrintXYZAnalysis(ref List<Transaction> transactions)
@@ -419,14 +424,36 @@ namespace project.ConsoleHandler
             // создаем таблицу и шапку
             var table = new Table();
             table.ShowRowSeparators = true;
-            table.AddColumn("Категория");
-            table.AddColumn("Продукты");
+            table.AddColumn(new TableColumn("Категория").Centered());
+            table.AddColumn(new TableColumn("Продукты").Centered());
 
             // добавляем ряды
             foreach (var el in xyz)
             {
                 string products = string.Join('\n', el.Value);
                 table.AddRow(el.Key, products);
+            }
+
+            AnsiConsole.Render(table);
+        }
+        /// <summary>
+        /// Вывод прогноза продаж на следующий месяц
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
+        public static void PrintForecast(ref List<Transaction> transactions)
+        {
+            var fcast = Analisator.Forecast(ref transactions); // прогноз
+
+            // создание таблицы и шапки
+            var table = new Table();
+            table.ShowRowSeparators = true;
+            table.AddColumn(new TableColumn("Продукт").Centered());
+            table.AddColumn(new TableColumn("Ожидаемые продажи").Centered());
+
+            // добавление строк
+            foreach (var el in fcast)
+            {
+                table.AddRow(el.Key, $"{el.Value:f2}");
             }
 
             AnsiConsole.Render(table);
