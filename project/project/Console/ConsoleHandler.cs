@@ -8,6 +8,7 @@ using project.db;
 using System.Globalization;
 using project.edit;
 using System.Security.Cryptography.X509Certificates;
+using project.DbClasses;
 
 namespace project.ConsoleHandler
 {
@@ -35,7 +36,8 @@ namespace project.ConsoleHandler
             Console.WriteLine("4. Удаление транзакции");
             Console.WriteLine("5. Редактирование транзакции");
             Console.WriteLine("6. Вывести статистику по регионам");
-            Console.WriteLine("7. Сохранение данных");
+            Console.WriteLine("7. Вывести сумму всех транзакций");
+            Console.WriteLine("8. Сохранение данных");
             Console.WriteLine("Esc. Выход");
         }
         public static void PrintRegionInfo(ref List<Transaction> transactions)
@@ -71,7 +73,7 @@ namespace project.ConsoleHandler
                 // добавление строк
                 foreach (var el in sorted.Skip(shift).Take(pageSize))
                 {
-                    table.AddRow(el.Region.ToString(), el.Count.ToString());
+                    table.AddRow(el.Region.ToString(), $"{el.Count:f2}");
                 }
                 AnsiConsole.Render(table);
 
@@ -151,10 +153,10 @@ namespace project.ConsoleHandler
                 //сортировка
                 if (sort == 1)
                 {
-                    filtered = filtered.OrderBy(x => x.Region);
+                    filtered = filtered.OrderBy(x => x.Date);
                 } else if (sort == -1)
                 {
-                    filtered = filtered.OrderByDescending(x => x.Region);
+                    filtered = filtered.OrderByDescending(x => x.Date);
                 }
 
                 var table = new Table();
@@ -325,6 +327,57 @@ namespace project.ConsoleHandler
             
         }
         /// <summary>
+        /// Выводит сумму всех транзакций в выбранной валюте
+        /// </summary>
+        /// <param name="transactions">список транзакций</param>
+        public static void PrintAllSales(ref List<Transaction> transactions)
+        {
+            Console.WriteLine("Введите валюту, сумму продаж в которой хотите посмотреть");
+            Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
+            
+            string currency = Console.ReadLine();
+            if (currency == "-1")
+            {
+                return;
+            }
+
+            DateTime dt = DateTime.MinValue;
+            bool flag = true;
+            while (flag)
+            {
+                Console.WriteLine("1. Вывести сумму по курсу на дату транзакции");
+                Console.WriteLine("2. Вывести сумму по текущему курсу");
+                Console.WriteLine("Esc. Вернуться в главное меню");
+
+                var key = Console.ReadKey().Key;
+                Console.Clear();
+                switch (key)
+                {
+                    case ConsoleKey.D1:
+                        flag = false;
+                        break;
+                    case ConsoleKey.D2:
+                        dt = DateTime.Now;
+                        flag = false;
+                        break;
+                    case ConsoleKey.Escape:
+                        return;
+                    default:
+                        Console.WriteLine("Неверная кнопка");
+                        break;
+                }
+            }
+            try
+            {
+                var res = TransactionsHandler.CalculateAllSales(ref transactions, dt, currency);
+                Console.WriteLine($"Сумма продаж в валюте {currency} равна {res:f2}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        /// <summary>
         /// Вывод ошибки при добавлении транзакции
         /// </summary>
         public static void PrintAddError()
@@ -383,15 +436,13 @@ namespace project.ConsoleHandler
             Console.WriteLine("Чтобы вернуться в главное меню, введите -1");
             DateTime dt;
             string s = Console.ReadLine();
+            if (s == "-1") {return; }
             bool f = DateTime.TryParse(s, out dt);
             while (!f)
             {
+                if (s == "-1") { return; }
                 PrintAddError();
                 s = Console.ReadLine();
-                if (s == "-1")
-                {
-                    return;
-                }
                 f = DateTime.TryParse(s, out dt);
             }
 
@@ -399,53 +450,53 @@ namespace project.ConsoleHandler
             Console.WriteLine("Введите id товара");
             uint prodId;
             s = Console.ReadLine();
+            if (s == "-1") { return; }
             f = uint.TryParse(s, out prodId);
             while (!f)
             {
+                if (s == "-1") { return; }
                 PrintAddError();
                 s = Console.ReadLine();
-                if (s == "-1")
-                {
-                    return;
-                }
                 f = uint.TryParse(s, out prodId);
             }
 
             // название
             Console.WriteLine("Введите название товара");
             string name = Console.ReadLine();
-            uint count;
+            if (s == "-1") { return; }
 
             // количество
+            uint count;
             Console.WriteLine("Введите количество товара");
             s = Console.ReadLine();
+            if (s == "-1") { return; }
             f = uint.TryParse(s, out count);
             while (!f)
             {
+                if (s == "-1") { return; }
                 PrintAddError();
                 s = Console.ReadLine();
-                if (s == "-1")
-                {
-                    return;
-                }
                 f = uint.TryParse(s, out count);
             }
 
             // цена за единицу
-            uint price;
+            double price;
             Console.WriteLine("Введите цену за единицу");
             s = Console.ReadLine();
-            f &= uint.TryParse(s, out price);
+            if (s == "-1") { return; }
+            f &= double.TryParse(s, out price);
             while (!f)
             {
+                if (s == "-1") { return; }
                 PrintAddError();
                 s = Console.ReadLine();
-                if (s == "-1")
-                {
-                    return;
-                }
-                f = uint.TryParse(s, out price);
+                f = double.TryParse(s, out price);
             }
+
+            // код валюты
+            Console.WriteLine("Введите код валюты");
+            string currency = Console.ReadLine();
+            if (s == "-1") { return; }
 
             // регион
             byte reg;
@@ -454,16 +505,20 @@ namespace project.ConsoleHandler
             f &= byte.TryParse(s, out reg);
             while (!f)
             {
+                if (s == "-1") { return; }
                 PrintAddError();
                 s = Console.ReadLine();
-                if (s == "-1")
-                {
-                    return;
-                }
-                f = uint.TryParse(s, out price);
+                f = byte.TryParse(s, out reg);
             }
 
-            TransactionsHandler.Add(ref data, new Transaction(dt, prodId, name, count, price, reg));
+            try
+            {
+                TransactionsHandler.Add(ref data, new Transaction(dt, prodId, name, count, price, currency, reg));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
         /// <summary>
         /// Удаление транзакции
@@ -530,7 +585,9 @@ namespace project.ConsoleHandler
                 else if (resp == "id") { el = Elements.ProdId; break; }
                 else if (resp == "название") { el = Elements.Name; break; }
                 else if (resp == "количество") { el = Elements.Count; break; }
-                else if (resp == "цена") { el = Elements.PricePerUnit; break; }
+                else if (resp == "цена в рублях") { el = Elements.PricePerUnit; break; }
+                else if (resp == "цена в валюте") { el = Elements.PriceInCurrency; break; }
+                else if (resp == "валюта") { el = Elements.Currency; break; }
                 else if (resp == "регион") { el = Elements.Region; break; }
                 else if (resp == "-1") { return; }
                 else 
@@ -573,6 +630,21 @@ namespace project.ConsoleHandler
                         Console.WriteLine(e.Message);
                     }
                     break;
+                case Elements.Currency:
+                    // цикл ввода валюты, пока пользователь не введет корректную
+                    while (!CurrencyConverter.IsValid(s))
+                    {
+                        s = Console.ReadLine();
+                    }
+                    try
+                    {
+                        TransactionsHandler.Edit(ref data, id, el, s);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    break;
                 case Elements.Region:
                     byte reg;
                     f = byte.TryParse(s, out reg);
@@ -593,10 +665,10 @@ namespace project.ConsoleHandler
                         Console.WriteLine(e.Message);
                     }
                     break;
-                default:
+                case Elements.Id:
                     uint val;
                     f = uint.TryParse(s, out val);
-                    // цикл ввода id товара, количества или цены, пока пользователь не введет корректное значение
+                    // цикл ввода id товара, пока пользователь не введет корректное значение
                     while (!f)
                     {
                         PrintEditError();
@@ -607,6 +679,46 @@ namespace project.ConsoleHandler
                     try
                     {
                         TransactionsHandler.Edit(ref data, id, el, val);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    break;
+                case Elements.Count:
+                    uint val1;
+                    f = uint.TryParse(s, out val1);
+                    // цикл ввода количества товара, пока пользователь не введет корректное значение
+                    while (!f)
+                    {
+                        PrintEditError();
+                        s = Console.ReadLine();
+                        if (s == "-1") { return; }
+                        f = uint.TryParse(s, out val1);
+                    }
+                    try
+                    {
+                        TransactionsHandler.Edit(ref data, id, el, val1);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    break;
+                default:
+                    double val2;
+                    f = double.TryParse(s, out val2);
+                    // цикл ввода цену товара, пока пользователь не введет корректное значение
+                    while (!f)
+                    {
+                        PrintEditError();
+                        s = Console.ReadLine();
+                        if (s == "-1") { return; }
+                        f = double.TryParse(s, out val2);
+                    }
+                    try
+                    {
+                        TransactionsHandler.Edit(ref data, id, el, val2);
                     }
                     catch (Exception e)
                     {

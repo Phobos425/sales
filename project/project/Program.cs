@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Text;
 using project.ConsoleHandler;
 using project.db;
+using project.DbClasses;
 using project.edit;
 
 public static class Program
 {
     public static void Main()
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // устанавливаем нужную кодировку
+        CurrencyConverter.GetAllCurrencyCodes(); // загружаем все возможные валюты
         bool isLoaded = false;
         List<Transaction> transactions = new List<Transaction>();
         ConsoleKeyInfo currKey = new ConsoleKeyInfo('0', ConsoleKey.D0, false, false, false);
@@ -55,8 +59,9 @@ public static class Program
                         ConsoleHandler.Edit(ref transactions); break;
                     case ConsoleKey.D6:
                         ConsoleHandler.PrintRegionInfo(ref transactions); break;
-                        break;
-                    case ConsoleKey.D7: // сохранение данных
+                    case ConsoleKey.D7:
+                        ConsoleHandler.PrintAllSales(ref transactions); break;
+                    case ConsoleKey.D8: // сохранение данных
                         FileHandler.WriteData(transactions);
                         Console.WriteLine("Данные успешно сохранены");
                         break;

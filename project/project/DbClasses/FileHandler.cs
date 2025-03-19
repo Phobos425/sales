@@ -45,7 +45,7 @@ namespace project.db
             {
                 string[] s = strings[i].Split(";"); // сплит строки по разделителю бд
                 if (s.Length == 1 && s[0] == "") { continue; }
-                if ( s.Length != 7) // проверка количества элементов транзакции
+                if ( s.Length != 9) // проверка количества элементов транзакции
                 {
                     throw new ArgumentException("Неверная запись транзакции");
                 }
@@ -80,9 +80,6 @@ namespace project.db
                     throw new ArgumentException("Неверная запись транзакции");
                 }
                 tmp.Add(new Transaction(id, dt, prodId, name, count, price, priceCur, currency, reg));
-            }
-            if (tmp.Count == 0) {
-                throw new Exception("Пустой файл");
             }
             data = tmp;
         }

@@ -32,6 +32,28 @@ namespace project.edit {
             return res;
 		}
         /// <summary>
+        /// считает сумму всех транзакций в выбранной валюте
+        /// </summary>
+        /// <param name="data">список транзакций</param>
+        /// <param name="date">равна или DateTime.Now, если надо посчитать по текущему курсу,
+        /// или DateTime.MinValue, если надо посчитать по курсу на дату транзакции</param>
+        /// <param name="currency">валюта</param>
+        /// <returns></returns>
+        public static double CalculateAllSales(ref List<Transaction> data, DateTime date, string currency)
+        {
+            double res = 0;
+            var date1 = date;
+            foreach (var trans in data)
+            {
+                if (date == DateTime.MinValue)
+                {
+                    date1 = trans.Date;
+                }
+                res += CurrencyConverter.RubToCur(trans.PricePerUnit, currency, date1);
+            }
+            return res;
+        }
+        /// <summary>
         /// Добавление транзакции
         /// </summary>
         /// <param name="data">список транзакций</param>
@@ -119,8 +141,7 @@ namespace project.edit {
                 case Elements.Name: trans.Name = val; break;
                 case Elements.Currency:
                     trans.Currency = val;
-                    string date = $"{trans.Date.Day}/{trans.Date.Month}/{trans.Date.Year}";
-                    trans.PricePerUnit = CurrencyConverter.CurToRub(trans.PriceInCurrency, val, date);
+                    trans.PricePerUnit = CurrencyConverter.CurToRub(trans.PriceInCurrency, val, trans.Date);
                     break;
             }
             trans.Name = val;
@@ -142,16 +163,15 @@ namespace project.edit {
                 throw new ArgumentException("Неверное id");
             }
             var trans = data[ind];
-            string date = $"{trans.Date.Day}/{trans.Date.Month}/{trans.Date.Year}";
             switch (el)
             {
                 case Elements.PricePerUnit:
                     trans.PricePerUnit = val;
-                    trans.PriceInCurrency = CurrencyConverter.RubToCur(val, trans.Currency, date);
+                    trans.PriceInCurrency = CurrencyConverter.RubToCur(val, trans.Currency, trans.Date);
                     break;
                 case Elements.PriceInCurrency:
                     trans.PriceInCurrency = val;
-                    trans.PricePerUnit = CurrencyConverter.CurToRub(val, trans.Currency, date);
+                    trans.PricePerUnit = CurrencyConverter.CurToRub(val, trans.Currency, trans.Date);
                     break;
             }
             data[ind] = trans;

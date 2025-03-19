@@ -13,8 +13,8 @@ namespace project.db
     /// </summary>
     public struct Transaction
     {
-        private static uint _newId = 0; //количество транзакций
-
+        private static uint _newId = 1; // id добавленной транзакции
+        private static HashSet<uint> _allId = new HashSet<uint>(); // все id 
         public uint Id { get; private set; } // id транзакции
         private DateTime _date; // дата транзакции
         public DateTime Date {
@@ -22,9 +22,11 @@ namespace project.db
                 return _date;
             }
             set {
-                if (DateTime.Compare(value, DateTime.Now) <= 0) { // проверка, что такая дата существует
+                if (value.Date <= DateTime.Now.Date && value >= DateTime.Parse("1.07.1992")) // проверка, что такая дата существует
+                { 
                     _date = value;
-                } else
+                } 
+                else
                 {
                     throw new ArgumentException("Неверная дата");
                 }
@@ -35,7 +37,22 @@ namespace project.db
         public uint Count { get; set; } // Количество
         public double PricePerUnit { get; set; } // Цена за единицу в рублях
         public double PriceInCurrency {  get; set; } // Цена за единицу в валюте
-        public string Currency { get; set; } // код валюты
+        private string _currency; // код валюты
+        public string Currency
+        {
+            get { return _currency; }
+            set
+            {
+                if (CurrencyConverter.IsValid(value)) // проверка существования кода валюты
+                {
+                    _currency = value;
+                } 
+                else
+                {
+                    throw new ArgumentException("Неверный код валюты");
+                }
+            }
+        }
         private byte _region; // регион транзакции
         public byte Region
         {
@@ -48,7 +65,8 @@ namespace project.db
                 if (value >= 1 && value <= 89) // проверка существования региона
                 {
                     _region = value;
-                } else
+                } 
+                else
                 {
                     throw new ArgumentException("Неверный регион");
                 }
@@ -65,18 +83,16 @@ namespace project.db
         /// <param name="priceInCurrency">цена за шт в валюте</param>
         /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
-        public Transaction(DateTime date, uint prodId, string name, uint count,double priceInRub, double priceInCurrency, string currency, byte region)
+        public Transaction(DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
         {
             Id = _newId;
             Date = date;
             ProdId = prodId;
             Name = name;
             Count = count;
-            PricePerUnit = priceInRub;
             PriceInCurrency = priceInCurrency;
             Currency = currency;
-            string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";
-            PricePerUnit = CurrencyConverter.CurToRub(PriceInCurrency, Currency, dt);
+            PricePerUnit = CurrencyConverter.CurToRub(PriceInCurrency, Currency, date);
             Region = region;
             ++_newId;
         }
@@ -88,6 +104,7 @@ namespace project.db
         /// <param name="prodId">id товара</param>
         /// <param name="name">наименование товара</param>
         /// <param name="count">количество товаров</param>
+        /// <param name="priceInRub">цена за шт в рублях</param>
         /// <param name="priceInCurrency">цена за шт в валюте</param>
         /// <param name="currency">код валюты</param>
         /// <param name="region">номер региона</param>
@@ -102,9 +119,12 @@ namespace project.db
             PricePerUnit = priceInRub;
             PriceInCurrency = priceInCurrency;
             Currency = currency;
-            string dt = $"{Date.Day}/{Date.Month}/{Date.Year}";
-            PricePerUnit = CurrencyConverter.CurToRub(PriceInCurrency, Currency, dt);
             Region = region;
+            if (_allId.Contains(Id))
+            {
+                throw new Exception("Не может быть 2 транзакции с одинаковыми id");
+            }
+            _allId.Add(Id);
         }
         public override string ToString()
         {
