@@ -44,7 +44,7 @@ namespace project.edit {
                 {
                     date1 = trans.Date;
                 }
-                res += CurrencyConverter.RubToCur(trans.PricePerUnit, currency, date1);
+                res += trans.Count * CurrencyConverter.RubToCur(trans.PricePerUnit, currency, date1);
             }
             return res;
         }

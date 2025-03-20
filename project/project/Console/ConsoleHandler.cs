@@ -56,7 +56,7 @@ namespace project.ConsoleHandler
             var res = from el in transactions
                       group el by el.Region
                       into g
-                      select new { Region = g.Key, Count= g.Sum(el => el.Count * el.PricePerUnit) };
+                      select new { Region = g.Key, Count = g.Sum(el => el.Count * el.PricePerUnit) };
             res = res.OrderByDescending(el => el.Count); // сортируем результат по сумме транзакций
             sbyte sort = 0;
             var sorted = res;

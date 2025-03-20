@@ -85,6 +85,10 @@ namespace project.db
         /// <param name="region">номер региона</param>
         public Transaction(DateTime date, uint prodId, string name, uint count, double priceInCurrency, string currency, byte region)
         {
+            if (priceInCurrency <= 0)
+            {
+                throw new ArgumentException("Цена не может быть <= 0");
+            }
             Id = _newId;
             Date = date;
             ProdId = prodId;
@@ -110,6 +114,10 @@ namespace project.db
         /// <param name="region">номер региона</param>
         public Transaction(uint id, DateTime date, uint prodId, string name, uint count, double priceInRub, double priceInCurrency, string currency, byte region)
         {
+            if (priceInCurrency <= 0 || priceInRub <= 0)
+            {
+                throw new ArgumentException("Цена не может быть <= 0");
+            }
             _newId = Math.Max(id + 1, _newId);
             Id = id;
             Date = date;
