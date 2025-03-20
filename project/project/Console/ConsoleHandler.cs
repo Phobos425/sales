@@ -10,8 +10,6 @@ using project.edit;
 using System.Security.Cryptography.X509Certificates;
 using project.DbClasses;
 using project.Analysis;
-using RazorEngine;
-using RazorEngine.Templating;
 
 namespace project.ConsoleHandler
 {
