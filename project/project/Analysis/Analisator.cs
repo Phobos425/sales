@@ -17,7 +17,7 @@ namespace project.Analysis
         /// </summary>
         /// <param name="transactions">список транзакций</param>
         /// <returns>разделение товаров на категории</returns>
-        public static Dictionary<string, List<string>> ABCAnalysis(ref List<Transaction> transactions)
+        public static Dictionary<string, string> ABCAnalysis(ref List<Transaction> transactions)
         {
             // создаем список с результатом
             var res = new Dictionary<string, List<string>>() 
@@ -52,14 +52,20 @@ namespace project.Analysis
                     res["C"].Add(el.Name);
                 }
             }
-            return res;
+            var ret = new Dictionary<string, string>()
+            {
+                {"A", string.Join("\n", res["A"]) },
+                {"B", string.Join("\n", res["B"]) },
+                {"C", string.Join("\n", res["C"]) }
+            };
+            return ret;
         }
         /// <summary>
         /// XYZ анализ
         /// </summary>
         /// <param name="transactions">список транзакций</param>
         /// <returns>разделение товаров на категории</returns>
-        public static Dictionary<string, List<string>> XYZAnalysis(ref List<Transaction> transactions)
+        public static Dictionary<string, string> XYZAnalysis(ref List<Transaction> transactions)
         {
             // создаем список с результатом
             var res = new Dictionary<string, List<string>>()
@@ -94,7 +100,13 @@ namespace project.Analysis
                 }
             }
 
-            return res;
+            var ret = new Dictionary<string, string>()
+            {
+                {"X", string.Join("\n", res["X"]) },
+                {"Y", string.Join("\n", res["Y"]) },
+                {"Z", string.Join("\n", res["Z"]) }
+            };
+            return ret;
         }
         /// <summary>
         /// предсказание продаж на следующий месяц, исполязуя метод скользящего среднего сглаживания за последние 3 месяца

@@ -10,6 +10,8 @@ using project.edit;
 using System.Security.Cryptography.X509Certificates;
 using project.DbClasses;
 using project.Analysis;
+using RazorEngine;
+using RazorEngine.Templating;
 
 namespace project.ConsoleHandler
 {
@@ -407,8 +409,7 @@ namespace project.ConsoleHandler
             // добавляем ряды
             foreach (var el in abc)
             {
-                string products = string.Join('\n', el.Value);
-                table.AddRow(el.Key, products);
+                table.AddRow(el.Key, el.Value);
             }
 
             AnsiConsole.Render(table);
@@ -430,8 +431,7 @@ namespace project.ConsoleHandler
             // добавляем ряды
             foreach (var el in xyz)
             {
-                string products = string.Join('\n', el.Value);
-                table.AddRow(el.Key, products);
+                table.AddRow(el.Key, el.Value);
             }
 
             AnsiConsole.Render(table);
@@ -458,6 +458,7 @@ namespace project.ConsoleHandler
 
             AnsiConsole.Render(table);
         }
+        
         /// <summary>
         /// Вывод ошибки при добавлении транзакции
         /// </summary>

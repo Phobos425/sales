@@ -1,4 +1,5 @@
-﻿using System;
+﻿///Сухомлин Артём Владимирович БПИ244-2 В-3
+using System;
 using System.Text;
 using project.ConsoleHandler;
 using project.db;
